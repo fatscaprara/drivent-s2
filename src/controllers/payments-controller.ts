@@ -19,3 +19,20 @@ export async function getPaymentByTicketId(req: AuthenticatedRequest, res: Respo
     return res.sendStatus(httpStatus.NOT_FOUND);
   }
 }
+
+export async function postPaymentProcess(req: AuthenticatedRequest, res: Response) {
+  try {
+    const { userId } = req;
+    const { ticketId, cardData } = req.body;
+
+    const payment = await paymentsService.postPaymentProcess(ticketId, userId, cardData);
+
+    if (!payment) return res.sendStatus(httpStatus.NOT_FOUND);
+
+    res.send(payment);
+  } catch (error) {
+    if (error.name === 'UnauthorizedError') return res.sendStatus(httpStatus.UNAUTHORIZED);
+
+    return res.sendStatus(httpStatus.NOT_FOUND);
+  }
+}
